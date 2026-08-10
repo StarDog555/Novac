@@ -3,7 +3,7 @@
 
 # Installation (Compiling from Source)
 
-**Novac** (Nova Compiler) Uses a No Build Build System mpp (Make++) Repo > **Link**: https://github.com/StarDog555/mpp
+**Novac** (Nova Compiler) Uses a No Build, Build System mpp (Make++) **Repo**: https://github.com/StarDog555/mpp
 
 **Why It's Good:**
 
