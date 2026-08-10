@@ -24,19 +24,17 @@ If Your Using Gcc, CC, clang follow this:
 Compile it:
 
 ```bash
-!COMPILER! -o mpp mpp.c
+<COMPILER> -o mpp mpp.c
 ```
 
 Run it:
 
 ```bash
-./mpp !COMPILER!
+./mpp <COMPILER>
 ```
 
 
 If Your Using Cl On Windows Follow this:
-
-Open Terminal:
 
 Open Developer Command Prompt for VS 2022 (or your installed version).
 
@@ -46,10 +44,10 @@ Compile it:
 cl /Fe:mpp.exe mpp.c
 ```
 
-Run It (**Note**: If Your Using CMD Run mpp !COMPILER!):
+Run It (**Note**: If Your Using CMD Run **mpp cl**):
 
 ```bash 
-./mpp !COMPILER!
+./mpp cl
 ```
 
 > **Note**: For Any Of These You Will Have to Run the Command In the Project's ROOT Dir
