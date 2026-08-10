@@ -1,4 +1,5 @@
-> **Nova Compiler**
+> **The Nova Compiler**
+
 
 # Installation (Compiling from Source)
 
