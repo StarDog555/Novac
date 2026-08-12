@@ -66,15 +66,14 @@ Run It (**Note**: If Your Using CMD Run **mpp cl**):
 Basic Compiling
 
 ```bash
-Novac test.nv -o HelloWorld --compile --debug
+Novac test.nv -o HelloWorld --debug --compile
 ```
 
 Commands
 
 [
 
---compile (Compiles File) > Note: Needs To Be At End But Can be before stuff like
---debug
+--compile (Compiles File) > Note: Needs To Be At End
 
 -o (Sets Output file name to the next argv[] after this)
 
