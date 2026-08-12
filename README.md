@@ -57,6 +57,24 @@ Run It (**Note**: If Your Using CMD Run **mpp cl**):
 
 ---
 
+# Commands[So Far]
+
+Basic Compiling
+
+```bash
+Novac test.nv -compile
+```
+
+Commands
+
+[
+
+-compile (Compiles File)
+
+]
+
+---
+
 # Author
 
 StarDog555

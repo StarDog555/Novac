@@ -5,56 +5,43 @@
 #include <string.h>
 #include <stdlib.h>
 
-size_t Tokenlength;
-char *m_src;
-char *file_contents;
-
 typedef struct 
 {
-    char * buffer;
     size_t length;
+    const char *m_src;
     const char *file_path;
-    const char *ext;
 } File;
 
 int Exit_With_Error(const char *m, FILE *f, char * buffer);
 
-void CheckFilext(File *f) 
-{
-    const char *dot = strrchr(f->file_path, '.');
-    if (!dot || dot == f->file_path) {
-        return;
+char *CheckFilext(const char *File_Path) {
+    char *dot = strrchr(File_Path, '.');
+    if (!dot || dot == File_Path) {
+        return "";
     }
-    
-    f->ext = dot;
-    
-    if (strcmp(f->ext, "nv") == 0) {} 
-    else {
-        Exit_With_Error("Wrong File Type: Enter A .nv File\n", NULL, NULL);
-        return;
-    }
+    return dot;   
 }
-void Open_Read_File(File *f) {
-    f->buffer = 0;
-    size_t length = f->length;
+
+void Open_Read_File(File *f) 
+{
     FILE *file = fopen(f->file_path, "rb");
-
-    if (file) {
-        fseek(file, 0, SEEK_END);
-        length = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        f->buffer = malloc(length + 1);
-
-        if (f->buffer) {
-            fread(f->buffer, 1, length, file);
-            f->buffer[length] = '\0';
-        }
-        fclose(file);
-    } else {
-        Exit_With_Error("ERROR: File Not Found\n", file, f->buffer);
+    if (!file) 
+    {
+        Exit_With_Error("Could not open file", NULL, NULL);
+        return;
     }
-
-    if (f->buffer) {
-        file_contents = f->buffer, m_src = f->buffer, Tokenlength = length;
-    }
+    
+    // Get file size
+    fseek(file, 0, SEEK_END);
+    f->length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    // Allocate buffer and read content
+    char *buffer = malloc(f->length + 1);
+    fread(buffer, 1, f->length, file);
+    buffer[f->length] = '\0';
+    
+    // Assign to file struct
+    f->m_src = buffer;
+    fclose(file);
 }
