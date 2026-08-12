@@ -4,37 +4,15 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "Base.h"
 
-size_t m_index = 0;
+#include "Base.h"
 
 typedef enum 
 {
     TOKEN_INT_LIT, // Int Number
-    TOKEN_EXIT, // exit
-    TOKEN_SEMI, // ;
-    TOKEN_EQ, // =
-    TOKEN_EQEQ, // ==
-    TOKEN_NEQ, // !=
-    TOKEN_LN, // >
-    TOKEN_MN, // <
-    TOKEN_MNQ, // <=
-    TOKEN_LNQ, // >=
-    TOKEN_BRACP, // {
-    TOKEN_BRACC, // }
-    TOKEN_PRAO, // (
-    TOKEN_PRAC, // )
-    TOKEN_AND, // &&
-    TOKEN_OR, // ||
-    TOKEN_RETURN, // return
-    TOKEN_IF, // if
-    TOKEN_ELSE, // else
-    TOKEN_ELSEIF, // else if
-    TOKEN_FUNCTION, // fn 
-    TOKEN_NULL, // NULL
-    TOKEN_IMPORT, // inport
-    TOKEN_INPUT, // input
-    TOKEN_INVALID  // Invaild
+    TOKEN_EXIT,    // exit
+    TOKEN_SEMI,    // ;
+    TOKEN_INVALID  // Invalid
 } TokenType;
 
 typedef struct
@@ -44,86 +22,122 @@ typedef struct
     int line;
 } Token;
 
+size_t m_index = 0;
 int Token_count = 0;
 int Line_count = 1;
+Token *tokens = NULL;
 
-char peek(int offset){ return m_src[m_index + offset];}
-void consume(size_t *m_index) { (*m_index)++; }
+void consume(size_t *m_index_ptr) { (*m_index_ptr)++; }
 
-void Tokenize(size_t *m_index, char *m_src) 
+char peek(int offset, File *f) { 
+    return f->m_src[m_index + offset]; 
+}
+
+const char* token_type_to_string(TokenType type) 
 {
-    if (m_src == NULL) {return;}
-    if (Tokenlength <= 0) {return;}
-
-    Token tokens[Tokenlength];
-    
-    while (*m_index < Tokenlength) 
+    switch (type) 
     {
-        char *buffer = malloc(Tokenlength + 1);
-        int buffer_index = 0;
+        case TOKEN_INT_LIT: return "TOKEN_INT_LIT";
+        case TOKEN_EXIT:    return "TOKEN_EXIT";
+        case TOKEN_SEMI:    return "TOKEN_SEMI";
+        case TOKEN_INVALID: return "TOKEN_INVALID";
+        default:            return "UNKNOWN";
+    }
+}
 
-        if (buffer != NULL) 
+void Tokenize(size_t *m_index_ptr, File *f) 
+{
+    // --- DEBUG CHECK 1 ---
+    if (f == NULL) {
+        printf("DEBUG ERROR: File pointer 'f' is NULL!\n");
+        return;
+    }
+    if (f->m_src == NULL) {
+        printf("DEBUG ERROR: f->m_src is NULL! Open_Read_File failed or couldn't find 'test.nv'.\n");
+        return; 
+    }
+    if (f->length <= 0) {
+        printf("DEBUG ERROR: File length is %zu (empty file or failed to read).\n", f->length);
+        return; 
+    }
+
+    tokens = malloc(sizeof(Token) * (f->length + 1));
+    Token_count = 0;
+
+    while (*m_index_ptr < f->length) 
+    {
+        char current = f->m_src[*m_index_ptr];
+
+        if (isspace(current)) 
         {
-            while (isalpha(m_src[*m_index])) {
-                buffer[buffer_index++] = m_src[*m_index];
-                (*m_index)++;
+            if (current == '\n') {
+                Line_count++;
             }
-            
+            consume(m_index_ptr);
+            continue;
+        }
+
+        if (isalpha(current)) 
+        {
+            char buffer[256];
+            int buffer_index = 0;
+
+            while (*m_index_ptr < f->length && isalpha(f->m_src[*m_index_ptr])) 
+            {
+                if (buffer_index < 255) {
+                    buffer[buffer_index++] = f->m_src[*m_index_ptr];
+                }
+                (*m_index_ptr)++;
+            }
             buffer[buffer_index] = '\0';
-            
-            if (strcmp(buffer, "exit") == 0) {
-                
+
+            if (strcmp(buffer, "exit") == 0) 
+            {
                 tokens[Token_count].type = TOKEN_EXIT;
                 tokens[Token_count].value = 0;
                 tokens[Token_count].line = Line_count;
-                
-                Token_count++;
-            }
-
-            else if (isspace(m_src[*m_index])) 
-            {
-                consume(m_index);
-            }
-
-            else if (isdigit(m_src[*m_index])) 
-            {
-                int value = 0;
-
-                while (isdigit(m_src[*m_index])) {
-                    value = value * 10 + (m_src[*m_index] - '0');
-                    (*m_index)++;
-                }
-
-                
-                tokens[Token_count].type = TOKEN_INT_LIT;
-                tokens[Token_count].value = value;
-                
-                Token_count++;
-            }
-
-            else if (m_src[*m_index] == ';') 
-            {
-                
-                tokens[Token_count].type = TOKEN_SEMI;
-                tokens[Token_count].value = 0;
-                tokens[Token_count].line = Line_count++;
-                
-                Token_count++;
-                consume(m_index);
-            }
+            } 
             else 
             {
                 tokens[Token_count].type = TOKEN_INVALID;
-                tokens[Token_count].line = Line_count++;
-                
-                Token_count++;
-                consume(m_index);
+                tokens[Token_count].value = 0;
+                tokens[Token_count].line = Line_count;
             }
-            free(buffer);
-        } else 
+            Token_count++;
+        }
+        else if (isdigit(current)) 
         {
-            Exit_With_Error("Buffer is NULL\n", NULL, NULL);
-            break;
+            int value = 0;
+            while (*m_index_ptr < f->length && isdigit(f->m_src[*m_index_ptr])) 
+            {
+                value = value * 10 + (f->m_src[*m_index_ptr] - '0');
+                (*m_index_ptr)++;
+            }
+
+            tokens[Token_count].type = TOKEN_INT_LIT;
+            tokens[Token_count].value = value;
+            tokens[Token_count].line = Line_count;
+            Token_count++;
+        }
+        else if (current == ';') 
+        {
+            tokens[Token_count].type = TOKEN_SEMI;
+            tokens[Token_count].value = 0;
+            tokens[Token_count].line = Line_count;
+            Token_count++;
+            consume(m_index_ptr);
+        }
+        else 
+        {
+            tokens[Token_count].type = TOKEN_INVALID;
+            tokens[Token_count].value = 0;
+            tokens[Token_count].line = Line_count;
+            Token_count++;
+            consume(m_index_ptr);
         }
     }
+    
+    // --- DEBUG CHECK 2 ---
+    printf("DEBUG: Tokenize finished. Total tokens found = %d\n", Token_count);
+    fflush(stdout);
 }
