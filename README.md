@@ -73,7 +73,8 @@ Commands
 
 [
 
---compile (Compiles File)
+--compile (Compiles File) > Note: Needs To Be At End But Can be before stuff like
+--debug
 
 -o (Sets Output file name to the next argv[] after this)
 
