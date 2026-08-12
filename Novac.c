@@ -4,10 +4,13 @@
 #include <stdbool.h>
 #include <string.h>
 
+bool Debug = false;
+bool Compiled = false;
+
 #include "include/Base.h"
 #include "include/lexer.h"
 
-char *Outname;
+char *Outname = "Default";
 
 int Exit_With_Error(const char *m, FILE *f, char *buffer)
 {
@@ -21,65 +24,111 @@ int Exit_With_Error(const char *m, FILE *f, char *buffer)
     return EXIT_FAILURE;
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
-    fflush(stdout);
-     
-    // Giving Error If no Input Files
     if (argc < 2) {
-        Exit_With_Error("No Input File\n", NULL, NULL);
-        return 1;
+        return Exit_With_Error("No Input File\n", NULL, NULL);
     }
 
-    // Needed For Checking
     int FileCount = 0;
     File file = {0};
-    
-    // Looping for argvs Checking Argv[i]
+
     for (int i = 1; i < argc; i++) {
+
         if (strcmp(argv[i], "-o") == 0) {
             if (i + 1 >= argc) {
-                Exit_With_Error("No OutName After -o\n", NULL, NULL);
+                return Exit_With_Error("No OutName After -o\n", NULL, NULL);
             }
-            
+
+            if (argv[i + 1][0] == '-') {
+                return Exit_With_Error("Invalid OutName After -o\n", NULL, NULL);
+            }
+
             Outname = argv[++i];
         }
-        else if (strcmp(argv[i], "-compile") == 0) {
-            if (i + 1 < argc) {
-                Exit_With_Error("Flags Like -compile Need To Be At The End", NULL                ,NULL);
-            }
-            Tokenize(&m_index, &file);
 
-            int token_count = Token_count;
-            
-            // Loop through and print all tokens
-            for (int j = 0; j < token_count; j++) 
-            {
-                printf("Token %d -> Type: %s, Value: %d, Line: %d\n",
-                j,
-                token_type_to_string(tokens[j].type),
-                tokens[j].value,
-                tokens[j].line);
+        else if (strcmp(argv[i], "--compile") == 0) {
+            if (i + 1 < argc) {
+                return Exit_With_Error(
+                    "Flags Like --compile Need To Be At The End\n",
+                    NULL,
+                    NULL
+                );
             }
+
+            Compiled = true;
         }
-        
+
+        else if (strcmp(argv[i], "--debug") == 0) {
+            Debug = true;
+        }
+
         else if (strcmp(argv[i], "--help") == 0) {
-            printf("TODO: Give & Open Documentation Link (Local)");
+            printf("TODO: Give & Open Documentation Link (Local)\n");
+            return EXIT_SUCCESS;
         }
-        
+
         else if (strcmp(CheckFilext(argv[i]), ".nv") == 0) {
-            if (FileCount >= 2) {
-                Exit_With_Error("Too many Input Files, Try Importing instead                      \n", NULL, NULL);
+            if (FileCount >= 1) {
+                return Exit_With_Error(
+                    "Too many Input Files, Try Importing instead\n",
+                    NULL,
+                    NULL
+                );
             }
-        
+
             file.file_path = argv[i];
             Open_Read_File(&file);
-            
+
             FileCount++;
         }
-        
+
         else {
-            Exit_With_Error("Unknown Command or invaild File Type, --help", NULL,            NULL);
+            return Exit_With_Error(
+                "Unknown Command or Invalid File Type, Try --help\n",
+                NULL,
+                NULL
+            );
+        }
+    }
+
+    if (FileCount == 0) {
+        return Exit_With_Error("No Input File\n", NULL, NULL);
+    }
+
+    if (Compiled) {
+        m_index = 0;
+        Line_count = 1;
+        col_count = 1;
+
+        Tokenize(&m_index, &file);
+    }
+
+    if (Debug) {
+        printf("DEBUG: Input File: %s\n", file.file_path);
+        printf("DEBUG: File Length: %zu\n", file.length);
+        
+        if (strcmp(Outname, "Default") == 0) {
+            printf("DEBUG: No Output File Name Enter Set To Default\n");
+        } else {
+            printf("DEBUG: Output File Name: %s\n", Outname);   
+        }
+        
+        printf("DEBUG: Compiled: %s\n", Compiled ? "true" : "false");
+
+        if (Compiled) {
+            printf("DEBUG: Total Tokens: %d\n", Token_count);
+
+            for (int j = 0; j < Token_count; j++) {
+                printf(
+                    "Token %d -> Type: %s, Value: %d, Row: %d, Col: %zu\n",
+                    j,
+                    token_type_to_string(tokens[j].type),
+                    tokens[j].value,
+                    tokens[j].row,
+                    tokens[j].col
+                );
+            }
         }
     }
 
