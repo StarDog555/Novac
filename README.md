@@ -66,7 +66,7 @@ Run It (**Note**: If Your Using CMD Run **mpp cl**):
 Basic Compiling
 
 ```bash
-Novac test.nv -o HelloWorld -compile --debug
+Novac test.nv -o HelloWorld --compile --debug
 ```
 
 Commands
