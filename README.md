@@ -38,6 +38,7 @@ Run it:
 ./mpp <COMPILER>
 ```
 
+> **Note**: The COMPILER is the Compiler, You want to use
 
 If Your Using Cl On Windows Follow this:
 
@@ -57,11 +58,9 @@ Run It (**Note**: If Your Using CMD Run **mpp cl**):
 
 > **Note**: For Any Of These You Will Have to Run the Command In the Project's ROOT Dir
 
-> **Note**: The COMPILER is the Compiler, You want to use
-
 ---
 
-# Commands[So Far]
+# Commands
 
 Basic Compiling
 
@@ -69,17 +68,13 @@ Basic Compiling
 Novac test.nv -o HelloWorld --debug --compile
 ```
 
-Commands
-
-[
+Commands:
 
 --compile (Compiles File) > Note: Needs To Be At End
 
 -o (Sets Output file name to the next argv[] after this)
 
 --debug (Turns On Debug Mode) 
-
-]
 
 ---
 
