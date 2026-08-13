@@ -13,7 +13,7 @@ typedef enum
     TOKEN_EXIT,    // exit
     TOKEN_SEMI, // ;
     TOKEN_EOF, // End Of File
-    
+  
     TOKEN_PLUS, // +
     TOKEN_MINUS, // -
     TOKEN_DIVIDE, // /
@@ -189,7 +189,24 @@ void Tokenize(size_t *index, File *f)
             consume(index);
             col_count++;
         }
-        
+
+        // Comments
+        else if (*index + 1 < f->length &&
+            f->m_src[*index] == '/' &&
+            f->m_src[*index + 1] == '/'){
+    
+            *index += 2;
+            col_count += 2;
+
+            while (*index < f->length && f->m_src[*index] != '\n')
+            {
+                (*index)++;
+                col_count++;
+            }
+
+            continue;
+        }
+       
         // Divide
         else if (current == '/') {
             add_token(TOKEN_DIVIDE, 0, Line_count, col_count); 
@@ -221,7 +238,7 @@ void Tokenize(size_t *index, File *f)
             consume(index);
             col_count++;
         }
-
+        
         // End Of File
         else if (*index >= f->length) {
             add_token(TOKEN_EOF, 0, Line_count, col_count);
@@ -234,7 +251,7 @@ void Tokenize(size_t *index, File *f)
             consume(index);
             col_count++;
         }
-
+     
         // Anything else
         else
         {

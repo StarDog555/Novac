@@ -76,6 +76,8 @@ Commands:
 
 --debug (Turns On Debug Mode) 
 
+--help (Opens Local Docs In Browser)
+
 ---
 
 # Author
