@@ -261,7 +261,13 @@ _Root *Parse(Token *tokens, size_t Token_count)
         Token *token = &tokens[index];
 
         if (token->type == TOKEN_EXIT){
-            Parse_EXIT(tokens, &index);
+            EXIT *exit = Parse_EXIT(tokens, &index);
+            Part *part = malloc(sizeof(Part));
+            if (part == NULL) { Exit_With_Error("Failed to allocate Part", NULL, NULL);}
+
+            part->Exit = exit;
+            root->part = part;
+            root->Part_count++;
         }
         else{
             Compiled = false;

@@ -7,7 +7,7 @@ struct{
 } HelloWorld;
 
 obj TestObj = {
-    char a = ""
+    char a = "a"
     String foo{a} = "foo"; // this will do fooa at runtime use you can still use foo
     String bar = "bar";
 
@@ -34,9 +34,5 @@ fn void main() {
    MyObj.Print_Foo_Bar();
    Print(stdout, TestReturn());
 
-   exit h;
-
-   int h = 0 // This Works At Parse Time ALL variables Goto the top of the fn
-   // For outsize of fn any variable made is a global one Goto the top Just Before
-   any Stdlib imports above File Imports like MyFile.nv
+   exit 0;
 }

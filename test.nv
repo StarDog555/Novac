@@ -1,2 +1,2 @@
 // This is a comment
-exit (1 + 1) * 2 / 3 ^ 2;
+exit ((1 + 1) * 2) / (3 ^ 2); // This Works too
