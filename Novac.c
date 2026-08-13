@@ -103,6 +103,7 @@ int main(int argc, char *argv[])
         col_count = 1;
 
         Tokenize(&m_index, &file);
+        Parse(tokens, Token_count);
     }
 
     if (Debug) {
@@ -130,6 +131,9 @@ int main(int argc, char *argv[])
                     tokens[j].col
                 );
             }
+            
+            printf("\n--- EXPE TREE ---\n");
+            Print_EXPE(temp->E, 0);
         }
     }
 

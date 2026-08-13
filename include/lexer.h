@@ -12,6 +12,7 @@ typedef enum
     TOKEN_INT_LIT, // Number
     TOKEN_EXIT,    // exit
     TOKEN_SEMI, // ;
+    TOKEN_EOF, // End Of File
     
     TOKEN_PLUS, // +
     TOKEN_MINUS, // -
@@ -55,7 +56,8 @@ const char* token_type_to_string(TokenType type)
         case TOKEN_OPEN_PRAC:  return "TOKEN_OPEN_PRAC";
         case TOKEN_CLOSE_PRAC: return "TOKEN_CLOSE_PRAC";
         case TOKEN_SEMI:       return "TOKEN_SEMI";
-        case TOKEN_INVALID:    return "TOKEN_INVALID";
+        case TOKEN_EOF:        return "TOKEN_EOF";
+        case TOKEN_INVALID:    return "TOKEN_INVALID";    
         default:               return "UNKNOWN";
     }
 }
@@ -218,6 +220,11 @@ void Tokenize(size_t *index, File *f)
             add_token(TOKEN_CLOSE_PRAC, 0, Line_count, col_count); 
             consume(index);
             col_count++;
+        }
+
+        // End Of File
+        else if (*index >= f->length) {
+            add_token(TOKEN_EOF, 0, Line_count, col_count);
         }
         
         // Semicolon
