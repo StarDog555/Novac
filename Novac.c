@@ -9,6 +9,7 @@ bool Compiled = false;
 
 #include "include/Base.h"
 #include "include/lexer.h"
+#include "include/Parser.h" 
 
 char *Outname = "Default";
 

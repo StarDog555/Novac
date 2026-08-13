@@ -9,9 +9,18 @@
 
 typedef enum 
 {
-    TOKEN_INT_LIT, // Int Number
+    TOKEN_INT_LIT, // Number
     TOKEN_EXIT,    // exit
-    TOKEN_SEMI,    // ;
+    TOKEN_SEMI, // ;
+    
+    TOKEN_PLUS, // +
+    TOKEN_MINUS, // -
+    TOKEN_DIVIDE, // /
+    TOKEN_MULTI, // *
+    TOKEN_OPEN_PRAC, // (
+    TOKEN_CLOSE_PRAC, // ) 
+    TOKEN_EXPO, // ^
+    
     TOKEN_INVALID  // Invalid
 } TokenType;
 
@@ -36,12 +45,29 @@ const char* token_type_to_string(TokenType type)
 {
     switch (type) 
     {
-        case TOKEN_INT_LIT: return "TOKEN_INT_LIT";
-        case TOKEN_EXIT:    return "TOKEN_EXIT";
-        case TOKEN_SEMI:    return "TOKEN_SEMI";
-        case TOKEN_INVALID: return "TOKEN_INVALID";
-        default: return "UNKNOWN";
+        case TOKEN_INT_LIT:    return "TOKEN_INT_LIT";
+        case TOKEN_EXIT:       return "TOKEN_EXIT";
+        case TOKEN_PLUS:       return "TOKEN_PLUS";
+        case TOKEN_MINUS:      return "TOKEN_MINUS";
+        case TOKEN_DIVIDE:     return "TOKEN_DIVIDE";
+        case TOKEN_EXPO:       return "TOKEN_EXPO";
+        case TOKEN_MULTI:      return "TOKEN_MULTI";
+        case TOKEN_OPEN_PRAC:  return "TOKEN_OPEN_PRAC";
+        case TOKEN_CLOSE_PRAC: return "TOKEN_CLOSE_PRAC";
+        case TOKEN_SEMI:       return "TOKEN_SEMI";
+        case TOKEN_INVALID:    return "TOKEN_INVALID";
+        default:               return "UNKNOWN";
     }
+}
+
+void add_token(TokenType type, int value, int row, size_t col)
+{
+    tokens[Token_count].type = type;
+    tokens[Token_count].value = value;
+    tokens[Token_count].row = row;
+    tokens[Token_count].col = col;
+
+    Token_count++;
 }
 
 void Tokenize(size_t *index, File *f)
@@ -147,24 +173,57 @@ void Tokenize(size_t *index, File *f)
                 col_count++;
             }
 
-            tokens[Token_count].type = TOKEN_INT_LIT;
-            tokens[Token_count].value = value;
-            tokens[Token_count].row = Line_count;
-            tokens[Token_count].col = token_col;
-
-            Token_count++;
+            add_token(TOKEN_INT_LIT, value, Line_count, token_col);
         }
-
+        // Plus
+        else if (current == '+') {
+            add_token(TOKEN_PLUS, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        // Minus
+        else if (current == '-') {
+            add_token(TOKEN_MINUS, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        
+        // Divide
+        else if (current == '/') {
+            add_token(TOKEN_DIVIDE, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        
+        // Expo
+        else if (current == '^') {
+            add_token(TOKEN_EXPO, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        // Multiply
+        else if (current == '*') {
+            add_token(TOKEN_MULTI, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        // Open Prac
+        else if (current == '(') {
+            add_token(TOKEN_OPEN_PRAC, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        // Close Prac
+        else if (current == ')') {
+            add_token(TOKEN_CLOSE_PRAC, 0, Line_count, col_count); 
+            consume(index);
+            col_count++;
+        }
+        
         // Semicolon
         else if (current == ';')
         {
-            tokens[Token_count].type = TOKEN_SEMI;
-            tokens[Token_count].value = 0;
-            tokens[Token_count].row = Line_count;
-            tokens[Token_count].col = col_count;
-
-            Token_count++;
-
+            add_token(TOKEN_SEMI, 0, Line_count, col_count);
             consume(index);
             col_count++;
         }
@@ -172,13 +231,7 @@ void Tokenize(size_t *index, File *f)
         // Anything else
         else
         {
-            tokens[Token_count].type = TOKEN_INVALID;
-            tokens[Token_count].value = 0;
-            tokens[Token_count].row = Line_count;
-            tokens[Token_count].col = col_count;
-
-            Token_count++;
-
+            add_token(TOKEN_INVALID, 0, Line_count, col_count);
             consume(index);
             col_count++;
         }
