@@ -3,8 +3,6 @@
 
 > **The Nova Compiler**
 
-New:
-
 **Novac** (Nova Compiler) Is made in Ts (TypeScript) Before It was Made In C But The Code got **SUPER** Messy so I decided to make in ts
 
 Commands:
@@ -26,8 +24,7 @@ StarDog555
 
 
 
-Old:
-# Installation (Compiling from Source)
+# OLD Installation (Compiling from Source)
 
 **Novac** (Nova Compiler) Uses a No Build, Build System mpp (Make++) **Repo**: https://github.com/StarDog555/mpp
 
