@@ -1,15 +1,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Language: C](https://img.shields.io/badge/Language-C-blue.svg)
 
-> **The Nova Compiler**
+> **The Nova interpreter**
 
-**Novac** (Nova Compiler) Is made in Ts (TypeScript) Before It was Made In C But The Code got **SUPER** Messy so I decided to make in ts
+**Novac** (Nova interpreter) Is made in Ts (TypeScript) Before It was Made In C But The Code got **SUPER** Messy so I decided to make in ts Compiled Using Deno
 
 Commands:
 
---compile (Compiles File) > Note: Needs To Be At End
+--compile (Packages File With interpreter) > Note: Needs To Be At End
 
--o (Sets Output file name to the next argv[] after this)
+-o (Tells the --compile to outname with filename)
 
 --debug (Turns On Debug Mode) 
 
