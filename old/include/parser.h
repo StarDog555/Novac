@@ -1,8 +1,7 @@
 #pragma once
 #include "./lexer.h"
 
-typedef enum
-{
+typedef enum {
     EXPE_INT,
     EXPE_PLUS,
     EXPE_MINUS,
@@ -11,30 +10,22 @@ typedef enum
     EXPE_EXPO
 } EXPE_Type;
 
-typedef struct EXPE
-{
+typedef struct EXPE {
     EXPE_Type Type;
-
     int value;
-
     struct EXPE *left;
     struct EXPE *right;
 } EXPE;
 
-
-typedef struct
-{
+typedef struct {
     EXPE *E;
 } EXIT;
 
-
-typedef struct
-{
+typedef struct {
     EXIT *Exit;
 } Part;
 
-typedef struct
-{
+typedef struct {
     Part *part;
     size_t Part_count;
 } _Root;
@@ -49,31 +40,13 @@ void Print_EXPE(EXPE *e, int depth)
     for (int i = 0; i < depth; i++)
         printf("  ");
 
-    switch (e->Type)
-    {
-        case EXPE_INT:
-            printf("INT: %d\n", e->value);
-            break;
-
-        case EXPE_PLUS:
-            printf("PLUS\n");
-            break;
-
-        case EXPE_MINUS:
-            printf("MINUS\n");
-            break;
-
-        case EXPE_MULTI:
-            printf("MULTI\n");
-            break;
-
-        case EXPE_DIVIDE:
-            printf("DIVIDE\n");
-            break;
-
-        case EXPE_EXPO:
-            printf("EXPO\n");
-            break;
+    switch (e->Type) {
+        case EXPE_INT: printf("INT: %d\n", e->value); break;
+        case EXPE_PLUS: printf("PLUS\n"); break;
+        case EXPE_MINUS: printf("MINUS\n"); break;
+        case EXPE_MULTI: printf("MULTI\n"); break;
+        case EXPE_DIVIDE: printf("DIVIDE\n"); break;
+        case EXPE_EXPO: printf("EXPO\n"); break;
     }
 
     Print_EXPE(e->left, depth + 1);
@@ -83,17 +56,13 @@ void Print_EXPE(EXPE *e, int depth)
 EXPE *Parse_EXPE(Token *tokens, size_t *index, int min_precedence)
 {
     Token *token = &tokens[*index];
-
     EXPE *left = NULL;
 
-    if (token->type == TOKEN_INT_LIT)
-    {
+    if (token->type == TOKEN_INT_LIT) {
         left = malloc(sizeof(EXPE));
 
         if (left == NULL)
-        {
             Exit_With_Error("Failed to allocate EXPE", NULL, NULL);
-        }
 
         left->Type = EXPE_INT;
         left->value = token->value;
@@ -102,51 +71,46 @@ EXPE *Parse_EXPE(Token *tokens, size_t *index, int min_precedence)
 
         consume(index);
     }
-    else if (token->type == TOKEN_OPEN_PRAC)
-    {
-        consume(index); // (
+    else if (token->type == TOKEN_OPEN_PRAC) {
+        consume(index);
 
         left = Parse_EXPE(tokens, index, 0);
 
-        if (tokens[*index].type != TOKEN_CLOSE_PRAC)
-        {
-            char tempmsg[2056];
+        if (tokens[*index].type != TOKEN_CLOSE_PRAC) {
+            char msg[256];
 
             snprintf(
-                tempmsg,
-                sizeof(tempmsg),
-                "Expected ')' %d:%zu",
+                msg,
+                sizeof(msg),
+                "Expected ')' at %d:%zu",
                 tokens[*index].row,
                 tokens[*index].col
             );
 
-            Exit_With_Error(tempmsg, NULL, NULL);
+            Exit_With_Error(msg, NULL, NULL);
         }
 
-        consume(index); // )
+        consume(index);
     }
-    else
-    {
-        char tempmsg[2056];
+    else {
+        char msg[256];
 
         snprintf(
-            tempmsg,
-            sizeof(tempmsg),
-            "Expected expression %d:%zu",
+            msg,
+            sizeof(msg),
+            "Expected expression at %d:%zu",
             token->row,
             token->col
         );
 
-        Exit_With_Error(tempmsg, NULL, NULL);
+        Exit_With_Error(msg, NULL, NULL);
     }
 
-    while (1)
-    {
+    while (1) {
         TokenType op = tokens[*index].type;
         int precedence;
 
-        switch (op)
-        {
+        switch (op) {
             case TOKEN_PLUS:
             case TOKEN_MINUS:
                 precedence = 1;
@@ -166,17 +130,10 @@ EXPE *Parse_EXPE(Token *tokens, size_t *index, int min_precedence)
         }
 
         if (precedence < min_precedence)
-        {
             return left;
-        }
 
         consume(index);
 
-        /*
-         * ^ should eventually be right-associative.
-         * For now, use precedence + 1 for left-associative
-         * operators.
-         */
         int next_precedence = precedence + 1;
 
         EXPE *right = Parse_EXPE(
@@ -188,9 +145,7 @@ EXPE *Parse_EXPE(Token *tokens, size_t *index, int min_precedence)
         EXPE *e = malloc(sizeof(EXPE));
 
         if (e == NULL)
-        {
             Exit_With_Error("Failed to allocate EXPE", NULL, NULL);
-        }
 
         if (op == TOKEN_PLUS)
             e->Type = EXPE_PLUS;
@@ -200,7 +155,7 @@ EXPE *Parse_EXPE(Token *tokens, size_t *index, int min_precedence)
             e->Type = EXPE_MULTI;
         else if (op == TOKEN_DIVIDE)
             e->Type = EXPE_DIVIDE;
-        else if (op == TOKEN_EXPO)
+        else
             e->Type = EXPE_EXPO;
 
         e->value = 0;
@@ -216,39 +171,42 @@ EXIT *Parse_EXIT(Token *tokens, size_t *index)
     EXIT *exit_node = malloc(sizeof(EXIT));
 
     if (exit_node == NULL)
-    {
         Exit_With_Error("Failed to allocate exit_node", NULL, NULL);
-    }
 
-    consume(index); // TOKEN_EXIT
+    consume(index);
+
     exit_node->E = Parse_EXPE(tokens, index, 0);
 
     temp = exit_node;
-    
-    if (tokens[*index].type != TOKEN_SEMI)
-    {
-        Exit_With_Error(
-            "Expected ';' after exit EXPE",
-            NULL,
-            NULL
+
+    if (tokens[*index].type != TOKEN_SEMI) {
+        char msg[256];
+
+        snprintf(
+            msg,
+            sizeof(msg),
+            "Expected ';' after exit expression at %d:%zu",
+            tokens[*index].row,
+            tokens[*index].col
         );
+
+        Exit_With_Error(msg, NULL, NULL);
     }
-    
-    consume(index); // TOKEN_SEMI
+
+    consume(index);
+
     return exit_node;
 }
 
 _Root *Parse(Token *tokens, size_t Token_count)
 {
-    if (tokens == NULL){
+    if (tokens == NULL)
         Exit_With_Error("Tokens is NULL", NULL, NULL);
-    }
 
     _Root *root = malloc(sizeof(_Root));
 
-    if (root == NULL){
+    if (root == NULL)
         Exit_With_Error("Failed to allocate _Root", NULL, NULL);
-    }
 
     root->part = NULL;
     root->Part_count = 0;
@@ -256,22 +214,35 @@ _Root *Parse(Token *tokens, size_t Token_count)
     size_t index = 0;
 
     while (index < Token_count &&
-           tokens[index].type != TOKEN_EOF)
-    {
-        Token *token = &tokens[index];
+           tokens[index].type != TOKEN_EOF) {
 
-        if (token->type == TOKEN_EXIT){
+        if (tokens[index].type == TOKEN_EXIT) {
             EXIT *exit = Parse_EXIT(tokens, &index);
+
             Part *part = malloc(sizeof(Part));
-            if (part == NULL) { Exit_With_Error("Failed to allocate Part", NULL, NULL);}
+
+            if (part == NULL)
+                Exit_With_Error("Failed to allocate Part", NULL, NULL);
 
             part->Exit = exit;
+
             root->part = part;
             root->Part_count++;
         }
-        else{
+        else {
+            char msg[256];
+
+            snprintf(
+                msg,
+                sizeof(msg),
+                "Unexpected token %s at %d:%zu",
+                token_type_to_string(tokens[index].type),
+                tokens[index].row,
+                tokens[index].col
+            );
+
             Compiled = false;
-            Exit_With_Error("Unexpected Token", NULL, NULL);
+            Exit_With_Error(msg, NULL, NULL);
         }
     }
 

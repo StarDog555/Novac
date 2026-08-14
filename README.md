@@ -3,7 +3,30 @@
 
 > **The Nova Compiler**
 
+New:
 
+**Novac** (Nova Compiler) Is made in Ts (TypeScript) Before It was Made In C But The Code got **SUPER** Messy so I decided to make in ts
+
+Commands:
+
+--compile (Compiles File) > Note: Needs To Be At End
+
+-o (Sets Output file name to the next argv[] after this)
+
+--debug (Turns On Debug Mode) 
+
+--help (Opens Local Docs In Browser)
+
+---
+
+# Author
+
+StarDog555
+
+
+
+
+Old:
 # Installation (Compiling from Source)
 
 **Novac** (Nova Compiler) Uses a No Build, Build System mpp (Make++) **Repo**: https://github.com/StarDog555/mpp
@@ -77,9 +100,3 @@ Commands:
 --debug (Turns On Debug Mode) 
 
 --help (Opens Local Docs In Browser)
-
----
-
-# Author
-
-StarDog555
